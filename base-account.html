@@ -1,0 +1,2135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Gallery</title>
+    <style>
+
+        body {
+            background-color: #212121;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .option.selected {
+            background-color: #626262;
+            color: #979797;
+            font-weight: bold;
+        }
+        .deck-container{
+            display: none;
+        }
+        .container {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            /* max-width: 1480px; */
+            height: 90%;
+        }
+
+        .filters {
+            width: 25%;
+            /* background-color: #2c2c2c; */
+            padding: 1em;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .search-box input {
+            width: -webkit-fill-available;
+            padding: 0.7em;
+            margin-bottom: 1em;
+            background-color: transparent;
+            border: 2px solid #2f2f2f;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-group h3 {
+            cursor: pointer;
+        }
+
+        .accordion-content {
+            display: none;
+        }
+
+        .option {
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .option:hover {
+            background-color: #626262;
+            color: #979797;
+        }
+
+
+        .card-gallery {
+            width: 75%;
+            display: flex;
+            flex-wrap: wrap;
+            padding: 1em;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .card, .deck-card {
+            /* background-color: #444;
+            border: 1px solid #555; */
+            margin: 0.5em;
+            /* padding: 1em; */
+            /* width: calc(33.333% - 1em); */
+            width: calc((100% / 8) - 1em);
+            box-sizing: border-box;
+            height: auto;
+            cursor: pointer;
+        }
+
+        .card img, .deck-card img {
+            width: 100%;
+            border: 1px solid #2f2f2f;
+            border-radius: 5px;
+        }
+
+        .card-info {
+            text-align: center;
+        }
+
+        .card-counter {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 0.5em;
+        }
+
+        .card-counter button {
+            background-color: #4044a3;
+            border: none;
+            color: #fff;
+            padding: 0.5em;
+            cursor: pointer;
+        }
+
+        .card-counter .count {
+            margin: 0 0.5em;
+        }
+        .underline {
+            text-align: center;
+            font-size: 2em;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .underline::after {
+            content: '';
+            display: block;
+            width: 55%;
+            border-bottom: 3px solid #3f3fac;
+            position: absolute;
+            bottom: -5px;
+            right: 22%;
+            
+        }
+        .accordion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .header-text {
+            flex: 1;
+            font-size: 1.7em;
+            font-weight: 100;
+        }
+
+        .accordion-content {
+            display: none;
+        }
+
+        /* Button container styles */
+        .button-container {
+            display: flex;
+            /* justify-content: space-between; */
+            margin-bottom: 10px;
+            /* width: 100%; */
+            /* padding: 0 1em; Add padding to match the padding of the card gallery */
+            box-sizing: border-box;
+            position: absolute;
+            top: 1em;
+            /* left: 30%; */
+            z-index: 1; /* Ensure buttons are displayed above the cards */
+        }
+
+        /* Button styles */
+        .button-container button {
+            padding: 10px 30px;
+            background-color: transparent;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            font-size: 1.5em;
+        }
+        .button-container button::after {
+            content: '';
+            display: block;
+            width: 117%;
+            border-bottom: 3px solid #3f3fac;
+            position: relative;
+            /*bottom: -5px;
+            right: 22%; */
+            
+        }
+
+        /* Card container styles */
+        .card-container, .deck-container, .deck {
+            width: 100%;
+            position: relative;
+            margin-top: 10px; /* Adjust as needed to create space for the buttons */
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+        .additional-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px; /* Adjust margin as needed */
+        }
+
+        .additional-buttons button {
+            padding: 3px 20px;
+            background-color: transparent;
+            border: 2px solid #2f2f2f;
+            margin-top: -7px;
+            margin-left: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            color: #434343;
+            height: 32px;
+        }
+        .span3{
+            color: #434343;
+        }
+        .popup-modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            /* padding-top: 60px; */
+        }
+
+        .popup-content {
+            background-color: #212121;
+            margin: 5% auto;
+            /* padding: 20px; */
+            border: 1px solid #383838;
+            border-radius: 15px;
+            width: 70%;
+            /* max-width: 600px; */
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .popup-body {
+            display: flex;
+        }
+
+        .popup-image {
+            width: 50%;
+        }
+
+        .popup-image img {
+            width: 100%;
+        }
+
+        .popup-info {
+            width: 50%;
+            padding-left: 20px;
+            padding-top: 20px; /* Top padding for the info section */
+        }
+
+        .popup-info h2 {
+            margin-bottom: 10px;
+            font-size: 2em;
+            color: #a8a7a7;
+        }
+
+        .info-block {
+            display: block; /* Name section as block */
+            margin-bottom: 10px;
+        }
+
+        .info-inline {
+            display: inline-block; /* Faction and type sections as inline */
+            margin-right: 10px; /* Space between inline elements */
+        }
+
+        /* Ensure the p and label elements display properly */
+        .popup-info label {
+            display: block; /* Display label in its own row */
+            font-weight: bold;
+            margin-top: 30px;
+            font-size: 1.7em;
+            color: #a8a7a7;
+        }
+
+        .popup-info p {
+            display: block; /* Inline to align with labels */
+            margin-left: 45px; /* Space between label and text */
+            font-size: 1.4em;
+            color: #a8a7a7;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .filters, .card-gallery {
+                width: 100%;
+                height: 50%;
+            }
+
+            .card {
+                width: calc(50% - 1em);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                width: calc(100% - 1em);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="filters">
+            <h3 class="underline">Filters</h3>
+            <div class="search-box">
+                <input type="text" placeholder="Search by name">
+            </div>
+            <div style="border: 1px solid #2f2f2f; margin-top: 1em;"></div>
+            <div class="filter-group">
+                <h3 onclick="toggleAccordion('faction')" class="accordion-header">
+                    <span class="header-text">FACTION</span>
+                    <span id="selected-faction" class="selected-filter"></span>
+                    <span class="dropdown-sign">▼</span>
+                </h3>
+                <div id="faction-dropdown" class="accordion-content">
+                    <div class="option" data-faction="Mattervoid">Mattervoid</div>
+                    <div class="option" data-faction="Yucatec Scale-Clan">Yucatec Scale-Clan</div>
+                    <div class="option" data-faction="Animae Mechanicus">Animae Mechanicus</div>
+                    <div class="option" data-faction="Atlantis">Atlantis</div>
+                    <div class="option" data-faction="Obsidian Kingdom">Obsidian Kingdom</div>
+                    <div class="option" data-faction="Oracles of Gaia">Oracles of Gaia</div>
+                </div>
+            </div>
+            <div style="border: 1px solid #2f2f2f; margin-top: 1em;"></div>
+            
+            <div class="filter-group">
+                <h3 onclick="toggleAccordion('type')" class="accordion-header">
+                    <span class="header-text">TYPE</span>
+                    <span id="selected-type" class="selected-filter"></span>
+                    <span class="dropdown-sign">▼</span>
+                </h3>
+                <div id="type-dropdown" class="accordion-content">
+                    <div class="option" data-type="Relic">Relic</div>
+                    <div class="option" data-type="Character">Character</div>
+                    <div class="option" data-type="Renowned">Renowned</div>
+                    <div class="option" data-type="Fabled">Fabled</div>
+                    <div class="option" data-type="Unsung">Unsung</div>
+                    <div class="option" data-type="Historic">Historic</div>
+                    <div class="option" data-type="Turning Point">Turning Point</div>
+                    <div class="option" data-type="Pirate">Pirate</div>
+                    <div class="option" data-type="Prophet">Prophet</div>
+                    <div class="option" data-type="Spirit">Spirit</div>
+                </div>
+            </div>
+            
+            
+        </aside>
+        <section class="card-gallery">
+            <div class="button-container">
+                <button class="button1">CARD GALLERY</button>
+                <button class="button2">DECK</button>
+            </div>
+            <div class="additional-buttons">
+                <span class="span3">Filters (0)</span>
+                <button class="button4">&#10005; Clear Filters</button>
+            </div>
+            <div class="card-container">
+                <!-- Each card item -->
+                <div class="card" data-card-id="1" data-card-info="Beelzebul, Nightmare King" data-card-image="https://i.imgur.com/lEbKUBT.png" data-faction="Mattervoid" data-type="Fabled, Character">
+                    <img src="https://i.imgur.com/lEbKUBT.png" alt="Beelzebul, Nightmare King">
+                    <div class="card-info">
+                        <h4>Beelzebul, Nightmare King</h4>
+                    </div>
+                    <div class="card-counter">
+                        <button class="decrement">-</button>
+                        <span class="count">0</span>
+                        <button class="increment">+</button>
+                    </div>
+                </div>
+                <div class="card" data-card-id="2" data-card-info="Baal, Archangel of Void" data-card-image="https://i.imgur.com/iKG0v2y.png" data-faction="Mattervoid" data-type="Fabled, Character">
+                    <img src="https://i.imgur.com/iKG0v2y.png" alt="Baal, Archangel of Void">
+                    <div class="card-info">
+                        <h4>Baal, Archangel of Void</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="3" data-card-info="Malek, the Eternal Flame" data-card-image="https://i.imgur.com/1ywQiPk.png" data-faction="Mattervoid" data-type="Renowned, Character">
+                    <img src="https://i.imgur.com/1ywQiPk.png" alt="Malek, the Eternal Flame">
+                    <div class="card-info">
+                        <h4>Malek, the Eternal Flame</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="4" data-card-info="Brak'hir, the Animator" data-card-image="https://i.imgur.com/Lca7EYn.png" data-faction="Mattervoid" data-type="Renowned, Character">
+                    <img src="https://i.imgur.com/Lca7EYn.png" alt="Brak'hir, the Animator">
+                    <div class="card-info">
+                        <h4>Brak'hir, the Animator</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="5" data-card-info="Patmos, Midnight Cavelier" data-card-image="https://i.imgur.com/9eOi2lE.png" data-faction="Mattervoid" data-type="Renowned, Character">
+                    <img src="https://i.imgur.com/9eOi2lE.png" alt="Patmos, Midnight Cavelier">
+                    <div class="card-info">
+                        <h4>Patmos, Midnight Cavelier</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="6" data-card-info="Astaroth, Hand of Beelzebul" data-card-image="https://i.imgur.com/49poORn.png" data-faction="Mattervoid" data-type="Renowned, Character">
+                    <img src="https://i.imgur.com/49poORn.png" alt="Astaroth, Hand of Beelzebul">
+                    <div class="card-info">
+                        <h4>Astaroth, Hand of Beelzebul</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="7" data-card-info="Succubus" data-card-image="https://i.imgur.com/0amviWw.png" data-faction="Mattervoid" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/0amviWw.png" alt="Succubus">
+                    <div class="card-info">
+                        <h4>Succubus</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="8" data-card-info="Malek's Faithful" data-card-image="https://i.imgur.com/pjoY6sF.png" data-faction="Mattervoid" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/pjoY6sF.png" alt="Malek's Faithful">
+                    <div class="card-info">
+                        <h4>Malek's Faithful</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="9" data-card-info="Phasewalker of Nolan" data-card-image="https://i.imgur.com/UBydGTe.png" data-faction="Mattervoid" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/UBydGTe.png" alt="Phasewalker of Nolan">
+                    <div class="card-info">
+                        <h4>Phasewalker of Nolan</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="10" data-card-info="Beelzebul's Abomination" data-card-image="https://i.imgur.com/1zWkQhe.png" data-faction="Mattervoid" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/1zWkQhe.png" alt="Beelzebul's Abomination">
+                    <div class="card-info">
+                        <h4>Beelzebul's Abomination</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="11" data-card-info="Thanatophobia" data-card-image="https://i.imgur.com/DPjfeW3.png" data-faction="Mattervoid" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/DPjfeW3.png" alt="Thanatophobia">
+                    <div class="card-info">
+                        <h4>Thanatophobia</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="12" data-card-info="Royal Spectre" data-card-image="https://i.imgur.com/B8ZsgsF.png" data-faction="Mattervoid" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/B8ZsgsF.png" alt="Royal Spectre">
+                    <div class="card-info">
+                        <h4>Royal Spectre</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="13" data-card-info="Nekomancer" data-card-image="https://i.imgur.com/Pu0jVKU.png" data-faction="Mattervoid" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/Pu0jVKU.png" alt="Nekomancer">
+                    <div class="card-info">
+                        <h4>Nekomancer</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="14" data-card-info="Thoughtfiend" data-card-image="https://i.imgur.com/Eyux7dA.png" data-faction="Mattervoid" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/Eyux7dA.png" alt="Thoughtfiend">
+                    <div class="card-info">
+                        <h4>Thoughtfiend</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="15" data-card-info="Riddler Imp" data-card-image="https://i.imgur.com/Q7qsuJp.png" data-faction="Mattervoid" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/Q7qsuJp.png" alt="Riddler Imp">
+                    <div class="card-info">
+                        <h4>Riddler Imp</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="16" data-card-info="Cemetery Wanderer" data-card-image="https://i.imgur.com/pOObcmb.png" data-faction="Mattervoid" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/pOObcmb.png" alt="Cemetery Wanderer">
+                    <div class="card-info">
+                        <h4>Cemetery Wanderer</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="17" data-card-info="Tome of Brakhir" data-card-image="https://i.imgur.com/JMtdqMY.png" data-faction="Mattervoid" data-type="Relic">
+                    <img src="https://i.imgur.com/JMtdqMY.png" alt="Tome of Brakhir">
+                    <div class="card-info">
+                        <h4>Tome of Brakhir</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="18" data-card-info="Beelzebul's Blade" data-card-image="https://i.imgur.com/WOotREC.png" data-faction="Mattervoid" data-type="Relic">
+                    <img src="https://i.imgur.com/WOotREC.png" alt="Beelzebul's Blade">
+                    <div class="card-info">
+                        <h4>Beelzebul's Blade</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="19" data-card-info="Feasting Frenzy" data-card-image="https://i.imgur.com/10CKER4.png" data-faction="Mattervoid" data-type="Turning Point">
+                    <img src="https://i.imgur.com/10CKER4.png" alt="Feasting Frenzy">
+                    <div class="card-info">
+                        <h4>Feasting Frenzy</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="20" data-card-info="Eleventh Hour" data-card-image="https://i.imgur.com/VlQOS9D.png" data-faction="Mattervoid" data-type="Turning Point">
+                    <img src="https://i.imgur.com/VlQOS9D.png" alt="Eleventh Hour">
+                    <div class="card-info">
+                        <h4>Eleventh Hour</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="21" data-card-info="Glimpse the Void" data-card-image="https://i.imgur.com/Oo6fMkE.png" data-faction="Mattervoid" data-type="Turning Point">
+                    <img src="https://i.imgur.com/Oo6fMkE.png" alt="Glimpse the Void">
+                    <div class="card-info">
+                        <h4>Glimpse the Void</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="22" data-card-info="Naajal, the Halach Uinic" data-card-image="https://i.imgur.com/E4Om8A8.png" data-faction="Yucatec Scale-Clan" data-type="Fabled, Character">
+                    <img src="https://i.imgur.com/E4Om8A8.png" alt="Naajal, the Halach Uinic">
+                    <div class="card-info">
+                        <h4>Naajal, the Halach Uinic</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="23" data-card-info="Aguateca, Blood of Yucatan" data-card-image="https://i.imgur.com/aWmSfRy.png" data-faction="Yucatec Scale-Clan" data-type="Fabled, Character">
+                    <img src="https://i.imgur.com/aWmSfRy.png" alt="Aguateca, Blood of Yucatan">
+                    <div class="card-info">
+                        <h4>Aguateca, Blood of Yucatan</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="24" data-card-info="Kinich Ahau, the Sun" data-card-image="https://i.imgur.com/Bm9AfJb.png" data-faction="Yucatec Scale-Clan" data-type="Renowned, Character">
+                    <img src="https://i.imgur.com/Bm9AfJb.png" alt="Kinich Ahau, the Sun">
+                    <div class="card-info">
+                        <h4>Kinich Ahau, the Sun</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="25" data-card-info="Ixik Uh, the Moon" data-card-image="https://i.imgur.com/T8MH3bV.png" data-faction="Yucatec Scale-Clan" data-type="Renowned, Character">
+                    <img src="https://i.imgur.com/T8MH3bV.png" alt="Ixik Uh, the Moon">
+                    <div class="card-info">
+                        <h4>Ixik Uh, the Moon</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="26" data-card-info="Ah Kin Mai, the Owl" data-card-image="https://i.imgur.com/WMvPvKe.png" data-faction="Yucatec Scale-Clan" data-type="Renowned, Character">
+                    <img src="https://i.imgur.com/WMvPvKe.png" alt="Ah Kin Mai, the Owl">
+                    <div class="card-info">
+                        <h4>Ah Kin Mai, the Owl</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="27" data-card-info="Chichen Itza, Clan Temple" data-card-image="https://i.imgur.com/2R1nuDH.png" data-faction="Yucatec Scale-Clan" data-type="Renowned, Relic">
+                    <img src="https://i.imgur.com/2R1nuDH.png" alt="Chichen Itza, Clan Temple">
+                    <div class="card-info">
+                        <h4>Chichen Itza, Clan Temple</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="28" data-card-info="Bloodletter of Bubluc Chabtan" data-card-image="https://i.imgur.com/S8YSKGw.png" data-faction="Yucatec Scale-Clan" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/S8YSKGw.png" alt="Bloodletter of Bubluc Chabtan">
+                    <div class="card-info">
+                        <h4>Bloodletter of Bubluc Chabtan</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="29" data-card-info="Camazotz, the Exiled" data-card-image="https://i.imgur.com/TSyZj64.png" data-faction="Yucatec Scale-Clan" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/TSyZj64.png" alt="Camazotz, the Exiled">
+                    <div class="card-info">
+                        <h4>Camazotz, the Exiled</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="30" data-card-info="Vucub-Caquix, the Deceiver" data-card-image="https://i.imgur.com/4zMCxJf.png" data-faction="Yucatec Scale-Clan" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/4zMCxJf.png" alt="Vucub-Caquix, the Deceiver">
+                    <div class="card-info">
+                        <h4>Vucub-Caquix, the Deceiver</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="31" data-card-info="Kukulkan, the Feathered Serpent" data-card-image="https://i.imgur.com/VjOrM7B.png" data-faction="Yucatec Scale-Clan" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/VjOrM7B.png" alt="Kukulkan, the Feathered Serpent">
+                    <div class="card-info">
+                        <h4>Kukulkan, the Feathered Serpent</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="32" data-card-info="Chuc'ah, the Holcan" data-card-image="https://i.imgur.com/8AjNAqr.png" data-faction="Yucatec Scale-Clan" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/8AjNAqr.png" alt="Chuc'ah, the Holcan">
+                    <div class="card-info">
+                        <h4>Chuc'ah, the Holcan</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="33" data-card-info="Prophet of Cuchumaquic" data-card-image="https://i.imgur.com/ChLaN45.png" data-faction="Yucatec Scale-Clan" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/ChLaN45.png" alt="Prophet of Cuchumaquic">
+                    <div class="card-info">
+                        <h4>Prophet of Cuchumaquic</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="34" data-card-info="Prophet of Acan" data-card-image="https://i.imgur.com/nEI71BG.png" data-faction="Yucatec Scale-Clan" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/nEI71BG.png" alt="Prophet of Acan">
+                    <div class="card-info">
+                        <h4>Prophet of Acan</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="35" data-card-info="Prophet of Huracan" data-card-image="https://i.imgur.com/MjqnRd2.png" data-faction="Yucatec Scale-Clan" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/MjqnRd2.png" alt="Prophet of Huracan">
+                    <div class="card-info">
+                        <h4>Prophet of Huracan</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="36" data-card-info="Prophet of Chaac" data-card-image="https://i.imgur.com/2OqbG9X.png" data-faction="Yucatec Scale-Clan" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/2OqbG9X.png" alt="Prophet of Chaac">
+                    <div class="card-info">
+                        <h4>Prophet of Chaac</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="37" data-card-info="Prophet of Itzamna" data-card-image="https://i.imgur.com/mwnISnP.png" data-faction="Yucatec Scale-Clan" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/mwnISnP.png" alt="Prophet of Itzamna">
+                    <div class="card-info">
+                        <h4>Prophet of Itzamna</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="38" data-card-info="Prophet of Kisin" data-card-image="https://i.imgur.com/y4swWu7.png" data-faction="Yucatec Scale-Clan" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/y4swWu7.png" alt="Prophet of Kisin">
+                    <div class="card-info">
+                        <h4>Prophet of Kisin</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="39" data-card-info="Xibalba, the Underworld" data-card-image="https://i.imgur.com/stDFBtJ.png" data-faction="Yucatec Scale-Clan" data-type="Relic">
+                    <img src="https://i.imgur.com/stDFBtJ.png" alt="Xibalba, the Underworld">
+                    <div class="card-info">
+                        <h4>Xibalba, the Underworld</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="40" data-card-info="Blood Pact" data-card-image="https://i.imgur.com/HKWhBrr.png" data-faction="Yucatec Scale-Clan" data-type="Turning Point">
+                    <img src="https://i.imgur.com/HKWhBrr.png" alt="Blood Pact">
+                    <div class="card-info">
+                        <h4>Blood Pact</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="41" data-card-info="Immolation" data-card-image="https://i.imgur.com/PYdkRcS.png" data-faction="Yucatec Scale-Clan" data-type="Turning Point">
+                    <img src="https://i.imgur.com/PYdkRcS.png" alt="Immolation">
+                    <div class="card-info">
+                        <h4>Immolation</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="42" data-card-info="Naajal's Gaze" data-card-image="https://i.imgur.com/CQRVUKo.png" data-faction="Yucatec Scale-Clan" data-type="Turning Point">
+                    <img src="https://i.imgur.com/CQRVUKo.png" alt="Naajal's Gaze">
+                    <div class="card-info">
+                        <h4>Naajal's Gaze</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="43" data-card-info="Cora, the First to Wake" data-card-image="https://i.imgur.com/CeSgPDZ.png" data-faction="Animae Mechanicus" data-type="Fabled, Character">
+                    <img src="https://i.imgur.com/CeSgPDZ.png" alt="Cora, the First to Wake">
+                    <div class="card-info">
+                        <h4>Cora, the First to Wake</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="44" data-card-info="Vortek, the Second to Wake" data-card-image="https://i.imgur.com/vpr4n1q.png" data-faction="Animae Mechanicus" data-type="Fabled, Character">
+                    <img src="https://i.imgur.com/vpr4n1q.png" alt="Vortek, the Second to Wake">
+                    <div class="card-info">
+                        <h4>Vortek, the Second to Wake</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="45" data-card-info="Dr. Diabolical, Chief Engineer" data-card-image="https://i.imgur.com/f0SxY11.png" data-faction="Animae Mechanicus" data-type="Renowned, Character">
+                    <img src="https://i.imgur.com/f0SxY11.png" alt="Dr. Diabolical, Chief Engineer">
+                    <div class="card-info">
+                        <h4>Dr. Diabolical, Chief Engineer</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="46" data-card-info="Greystar Iliad XV-137" data-card-image="https://i.imgur.com/IvwHnqv.png" data-faction="Animae Mechanicus" data-type="Renowned, Character">
+                    <img src="https://i.imgur.com/IvwHnqv.png" alt="Greystar Iliad XV-137">
+                    <div class="card-info">
+                        <h4>Greystar Iliad XV-137</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="47" data-card-info="JBL-3S, Cora's Agent" data-card-image="https://i.imgur.com/I7IKrK9.png" data-faction="Animae Mechanicus" data-type="Renowned, Character">
+                    <img src="https://i.imgur.com/I7IKrK9.png" alt="JBL-3S, Cora's Agent">
+                    <div class="card-info">
+                        <h4>JBL-3S, Cora's Agent</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="48" data-card-info="Kai & Airoc" data-card-image="https://i.imgur.com/4RejQVd.png" data-faction="Animae Mechanicus" data-type="Renowned, Character">
+                    <img src="https://i.imgur.com/4RejQVd.png" alt="Kai & Airoc">
+                    <div class="card-info">
+                        <h4>Kai & Airoc</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="49" data-card-info="Starcrushed Overdrive" data-card-image="https://i.imgur.com/MvBTBl3.png" data-faction="Animae Mechanicus" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/MvBTBl3.png" alt="Starcrushed Overdrive">
+                    <div class="card-info">
+                        <h4>Starcrushed Overdrive</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="50" data-card-info="Skywinder Warsuit" data-card-image="https://i.imgur.com/11vkkOj.png" data-faction="Animae Mechanicus" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/11vkkOj.png" alt="Skywinder Warsuit">
+                    <div class="card-info">
+                        <h4>Skywinder Warsuit</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="51" data-card-info="Splitfire Colossus" data-card-image="https://i.imgur.com/0CztCD4.png" data-faction="Animae Mechanicus" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/0CztCD4.png" alt="Splitfire Colossus">
+                    <div class="card-info">
+                        <h4>Splitfire Colossus</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="52" data-card-info="Alloy of Greystar" data-card-image="https://i.imgur.com/cF2ueh9.png" data-faction="Animae Mechanicus" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/cF2ueh9.png" alt="Alloy of Greystar">
+                    <div class="card-info">
+                        <h4>Alloy of Greystar</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="53" data-card-info="Hallowed Bastion" data-card-image="https://i.imgur.com/OR7KNEw.png" data-faction="Animae Mechanicus" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/OR7KNEw.png" alt="Hallowed Bastion">
+                    <div class="card-info">
+                        <h4>Hallowed Bastion</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="54" data-card-info="Machina Nexus" data-card-image="https://i.imgur.com/binqeQS.png" data-faction="Animae Mechanicus" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/binqeQS.png" alt="Machina Nexus">
+                    <div class="card-info">
+                        <h4>Machina Nexus</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="55" data-card-info="Apache Pathfinder" data-card-image="https://i.imgur.com/639pBu0.png" data-faction="Animae Mechanicus" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/639pBu0.png" alt="Apache Pathfinder">
+                    <div class="card-info">
+                        <h4>Apache Pathfinder</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="56" data-card-info="Cryosmith" data-card-image="https://i.imgur.com/Jrkui7k.png" data-faction="Animae Mechanicus" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/Jrkui7k.png" alt="Cryosmith">
+                    <div class="card-info">
+                        <h4>Cryosmith</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="57" data-card-info="Hammerhead Guardian" data-card-image="https://i.imgur.com/bXe0tfr.png" data-faction="Animae Mechanicus" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/bXe0tfr.png" alt="Hammerhead Guardian">
+                    <div class="card-info">
+                        <h4>Hammerhead Guardian</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="58" data-card-info="Wolfram Delta" data-card-image="https://i.imgur.com/QWJcQ80.png" data-faction="Animae Mechanicus" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/QWJcQ80.png" alt="Wolfram Delta">
+                    <div class="card-info">
+                        <h4>Wolfram Delta</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="59" data-card-info="Wings of Greystar" data-card-image="https://i.imgur.com/287W6yM.png" data-faction="Animae Mechanicus" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/287W6yM.png" alt="Wings of Greystar">
+                    <div class="card-info">
+                        <h4>Wings of Greystar</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="60" data-card-info="MS-1 Pitmine" data-card-image="https://i.imgur.com/aW8gXOt.png" data-faction="Animae Mechanicus" data-type="Relic">
+                    <img src="https://i.imgur.com/aW8gXOt.png" alt="MS-1 Pitmine">
+                    <div class="card-info">
+                        <h4>MS-1 Pitmine</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="61" data-card-info="Where There's a Will..." data-card-image="https://i.imgur.com/OhslC34.png" data-faction="Animae Mechanicus" data-type="Turning Point">
+                    <img src="https://i.imgur.com/OhslC34.png" alt="Where There's a Will...">
+                    <div class="card-info">
+                        <h4>Where There's a Will...</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="62" data-card-info="Crisis Call" data-card-image="https://i.imgur.com/qNwkgSi.png" data-faction="Animae Mechanicus" data-type="Turning Point">
+                    <img src="https://i.imgur.com/qNwkgSi.png" alt="Crisis Call">
+                    <div class="card-info">
+                        <h4>Crisis Call</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="63" data-card-info="Magnum Opus" data-card-image="https://i.imgur.com/VMFNvgi.png" data-faction="Animae Mechanicus" data-type="Turning Point">
+                    <img src="https://i.imgur.com/VMFNvgi.png" alt="Magnum Opus">
+                    <div class="card-info">
+                        <h4>Magnum Opus</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="64" data-card-info="Ruby Tides, the Reaver" data-card-image="https://i.imgur.com/NDkro0w.png" data-faction="Atlantis" data-type="Fabled, Character, Pirate">
+                    <img src="https://i.imgur.com/NDkro0w.png" alt="Ruby Tides, the Reaver">
+                    <div class="card-info">
+                        <h4>Ruby Tides, the Reaver</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="65" data-card-info="Kraken, Leviathan of Atlantis" data-card-image="https://i.imgur.com/gselNi3.png" data-faction="Atlantis" data-type="Fabled, Character">
+                    <img src="https://i.imgur.com/gselNi3.png" alt="Kraken, Leviathan of Atlantis">
+                    <div class="card-info">
+                        <h4>Kraken, Leviathan of Atlantis</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="66" data-card-info="Hatch, the Quartermaster" data-card-image="https://i.imgur.com/pvs70fH.png" data-faction="Atlantis" data-type="Renowned, Character, Pirate">
+                    <img src="https://i.imgur.com/pvs70fH.png" alt="Hatch, the Quartermaster">
+                    <div class="card-info">
+                        <h4>Hatch, the Quartermaster</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="67" data-card-info="Nico, the Boatswain" data-card-image="https://i.imgur.com/mEDVlBX.png" data-faction="Atlantis" data-type="Renowned, Character, Pirate">
+                    <img src="https://i.imgur.com/mEDVlBX.png" alt="Nico, the Boatswain">
+                    <div class="card-info">
+                        <h4>Nico, the Boatswain</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="68" data-card-info="Crow, the Barrelman" data-card-image="https://i.imgur.com/6gzcZXk.png" data-faction="Atlantis" data-type="Renowned, Character, Pirate">
+                    <img src="https://i.imgur.com/6gzcZXk.png" alt="Crow, the Barrelman">
+                    <div class="card-info">
+                        <h4>Crow, the Barrelman</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="69" data-card-info="The Blood Ruby" data-card-image="https://i.imgur.com/2c2gVF7.png" data-faction="Atlantis" data-type="Renowned, Relic, Pirate">
+                    <img src="https://i.imgur.com/2c2gVF7.png" alt="The Blood Ruby">
+                    <div class="card-info">
+                        <h4>The Blood Ruby</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="70" data-card-info="Fluvial Faery" data-card-image="https://i.imgur.com/6GhYRp6.png" data-faction="Atlantis" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/6GhYRp6.png" alt="Fluvial Faery">
+                    <div class="card-info">
+                        <h4>Fluvial Faery</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="71" data-card-info="Kaiju, Treasure Hoarder" data-card-image="https://i.imgur.com/DNOcwIy.png" data-faction="Atlantis" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/DNOcwIy.png" alt="Kaiju, Treasure Hoarder">
+                    <div class="card-info">
+                        <h4>Kaiju, Treasure Hoarder</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="72" data-card-info="Pegleg Woodsurgeon" data-card-image="https://i.imgur.com/wroBqpb.png" data-faction="Atlantis" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/wroBqpb.png" alt="Pegleg Woodsurgeon">
+                    <div class="card-info">
+                        <h4>Pegleg Woodsurgeon</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="73" data-card-info="Siren of Atlantis" data-card-image="https://i.imgur.com/Jm7yZzC.png" data-faction="Atlantis" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/Jm7yZzC.png" alt="Siren of Atlantis">
+                    <div class="card-info">
+                        <h4>Siren of Atlantis</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="74" data-card-info="Umi, the Water Shifter" data-card-image="https://i.imgur.com/xZ7yKP3.png" data-faction="Atlantis" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/xZ7yKP3.png" alt="Umi, the Water Shifter">
+                    <div class="card-info">
+                        <h4>Umi, the Water Shifter</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="75" data-card-info="Whirlpool" data-card-image="https://i.imgur.com/OkLHl3n.png" data-faction="Atlantis" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/OkLHl3n.png" alt="Whirlpool">
+                    <div class="card-info">
+                        <h4>Whirlpool</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="76" data-card-info="Ruby's Tracker" data-card-image="https://i.imgur.com/a4ENMPv.png" data-faction="Atlantis" data-type="Unsung, Character, Pirate">
+                    <img src="https://i.imgur.com/a4ENMPv.png" alt="Ruby's Tracker">
+                    <div class="card-info">
+                        <h4>Ruby's Tracker</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="77" data-card-info="Bilge Rat" data-card-image="https://i.imgur.com/ZrIXt3U.png" data-faction="Atlantis" data-type="Unsung, Character, Pirate">
+                    <img src="https://i.imgur.com/ZrIXt3U.png" alt="Bilge Rat">
+                    <div class="card-info">
+                        <h4>Bilge Rat</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="78" data-card-info="Blacktide Corsair" data-card-image="https://i.imgur.com/bq8ebJM.png" data-faction="Atlantis" data-type="Unsung, Character, Pirate">
+                    <img src="https://i.imgur.com/bq8ebJM.png" alt="Blacktide Corsair">
+                    <div class="card-info">
+                        <h4>Blacktide Corsair</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="79" data-card-info="Blood Ruby Cannoneer" data-card-image="https://i.imgur.com/4sTHRxO.png" data-faction="Atlantis" data-type="Unsung, Character, Pirate">
+                    <img src="https://i.imgur.com/4sTHRxO.png" alt="Blood Ruby Cannoneer">
+                    <div class="card-info">
+                        <h4>Blood Ruby Cannoneer</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="80" data-card-info="First Mate" data-card-image="https://i.imgur.com/0rIK5P3.png" data-faction="Atlantis" data-type="Unsung, Character, Pirate">
+                    <img src="https://i.imgur.com/0rIK5P3.png" alt="First Mate">
+                    <div class="card-info">
+                        <h4>First Mate</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="81" data-card-info="Glacial Tragedy" data-card-image="https://i.imgur.com/pWZc4co.png" data-faction="Atlantis" data-type="Relic">
+                    <img src="https://i.imgur.com/pWZc4co.png" alt="Glacial Tragedy">
+                    <div class="card-info">
+                        <h4>Glacial Tragedy</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="82" data-card-info="Walk the Plank" data-card-image="https://i.imgur.com/PfuOeAt.png" data-faction="Atlantis" data-type="Turning Point">
+                    <img src="https://i.imgur.com/PfuOeAt.png" alt="Walk the Plank">
+                    <div class="card-info">
+                        <h4>Walk the Plank</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="83" data-card-info="Parlay" data-card-image="https://i.imgur.com/v97QxXt.png" data-faction="Atlantis" data-type="Turning Point">
+                    <img src="https://i.imgur.com/v97QxXt.png" alt="Parlay">
+                    <div class="card-info">
+                        <h4>Parlay</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="84" data-card-info="Capsize" data-card-image="https://i.imgur.com/R48wipU.png" data-faction="Atlantis" data-type="Turning Point">
+                    <img src="https://i.imgur.com/R48wipU.png" alt="Capsize">
+                    <div class="card-info">
+                        <h4>Capsize</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="85" data-card-info="Sindri Gimnarr, the Spark" data-card-image="https://i.imgur.com/sxbOHCW.png" data-faction="Obsidian Kingdom" data-type="Fabled, Character">
+                    <img src="https://i.imgur.com/sxbOHCW.png" alt="Sindri Gimnarr, the Spark">
+                    <div class="card-info">
+                        <h4>Sindri Gimnarr, the Spark</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="86" data-card-info="Uri, Protector of the Kingdom" data-card-image="https://i.imgur.com/H67WXW3.png" data-faction="Obsidian Kingdom" data-type="Fabled, Character">
+                    <img src="https://i.imgur.com/H67WXW3.png" alt="Uri, Protector of the Kingdom">
+                    <div class="card-info">
+                        <h4>Uri, Protector of the Kingdom</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="87" data-card-info="Revna, Silver Lightning" data-card-image="https://i.imgur.com/LSey5Sj.png" data-faction="Obsidian Kingdom" data-type="Renowned, Character">
+                    <img src="https://i.imgur.com/LSey5Sj.png" alt="Revna, Silver Lightning">
+                    <div class="card-info">
+                        <h4>Revna, Silver Lightning</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="88" data-card-info="Varr, Obsidian Warsmith" data-card-image="https://i.imgur.com/0PGkcPA.png" data-faction="Obsidian Kingdom" data-type="Renowned, Character">
+                    <img src="https://i.imgur.com/0PGkcPA.png" alt="Varr, Obsidian Warsmith">
+                    <div class="card-info">
+                        <h4>Varr, Obsidian Warsmith</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="89" data-card-info="Dravor, the Wildtamer" data-card-image="https://i.imgur.com/m67rRbY.png" data-faction="Obsidian Kingdom" data-type="Renowned, Character">
+                    <img src="https://i.imgur.com/m67rRbY.png" alt="Dravor, the Wildtamer">
+                    <div class="card-info">
+                        <h4>Dravor, the Wildtamer</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="90" data-card-info="The Grand Obsidian Bank" data-card-image="https://i.imgur.com/OL6qtjC.png" data-faction="Obsidian Kingdom" data-type="Renowned, Relic">
+                    <img src="https://i.imgur.com/OL6qtjC.png" alt="The Grand Obsidian Bank">
+                    <div class="card-info">
+                        <h4>The Grand Obsidian Bank</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="91" data-card-info="Obsidian Warcraft" data-card-image="https://i.imgur.com/Tzn9Bsx.png" data-faction="Obsidian Kingdom" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/Tzn9Bsx.png" alt="Obsidian Warcraft">
+                    <div class="card-info">
+                        <h4>Obsidian Warcraft</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="92" data-card-info="Inkjet Clinician" data-card-image="https://i.imgur.com/HI29ilu.png" data-faction="Obsidian Kingdom" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/HI29ilu.png" alt="Inkjet Clinician">
+                    <div class="card-info">
+                        <h4>Inkjet Clinician</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="93" data-card-info="Fyrrfjall Burrower" data-card-image="https://i.imgur.com/xUAmQZd.png" data-faction="Obsidian Kingdom" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/xUAmQZd.png" alt="Fyrrfjall Burrower">
+                    <div class="card-info">
+                        <h4>Fyrrfjall Burrower</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="94" data-card-info="Tectonic Tunneller" data-card-image="https://i.imgur.com/Vzdn381.png" data-faction="Obsidian Kingdom" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/Vzdn381.png" alt="Tectonic Tunneller">
+                    <div class="card-info">
+                        <h4>Tectonic Tunneller</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="95" data-card-info="Fyrrfjall Spy" data-card-image="https://i.imgur.com/gnPYUXz.png" data-faction="Obsidian Kingdom" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/gnPYUXz.png" alt="Fyrrfjall Spy">
+                    <div class="card-info">
+                        <h4>Fyrrfjall Spy</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="96" data-card-info="Adaptive Alchemist" data-card-image="https://i.imgur.com/RtYGA4l.png" data-faction="Obsidian Kingdom" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/RtYGA4l.png" alt="Adaptive Alchemist">
+                    <div class="card-info">
+                        <h4>Adaptive Alchemist</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="97" data-card-info="Ashcoat Boar" data-card-image="https://i.imgur.com/tZ2W0GL.png" data-faction="Obsidian Kingdom" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/tZ2W0GL.png" alt="Ashcoat Boar">
+                    <div class="card-info">
+                        <h4>Ashcoat Boar</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="98" data-card-info="Tavern Balladeer" data-card-image="https://i.imgur.com/rgODNvM.png" data-faction="Obsidian Kingdom" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/rgODNvM.png" alt="Tavern Balladeer">
+                    <div class="card-info">
+                        <h4>Tavern Balladeer</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="99" data-card-info="Sindri's Excavator" data-card-image="https://i.imgur.com/ZTsSXry.png" data-faction="Obsidian Kingdom" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/ZTsSXry.png" alt="Sindri's Excavator">
+                    <div class="card-info">
+                        <h4>Sindri's Excavator</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="100" data-card-info="Obsidian Masterwork" data-card-image="https://i.imgur.com/8B0Iy1s.png" data-faction="Obsidian Kingdom" data-type="Relic">
+                    <img src="https://i.imgur.com/8B0Iy1s.png" alt="Obsidian Masterwork">
+                    <div class="card-info">
+                        <h4>Obsidian Masterwork</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="101" data-card-info="Obsidian Frigate" data-card-image="https://i.imgur.com/0rxEmng.png" data-faction="Obsidian Kingdom" data-type="Relic">
+                    <img src="https://i.imgur.com/0rxEmng.png" alt="Obsidian Frigate">
+                    <div class="card-info">
+                        <h4>Obsidian Frigate</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="102" data-card-info="Bombardment" data-card-image="https://i.imgur.com/CANV88j.png" data-faction="Obsidian Kingdom" data-type="Turning Point">
+                    <img src="https://i.imgur.com/CANV88j.png" alt="Bombardment">
+                    <div class="card-info">
+                        <h4>Bombardment</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="103" data-card-info="Extinction Eventt" data-card-image="https://i.imgur.com/eBREKJs.png" data-faction="Obsidian Kingdom" data-type="Turning Point">
+                    <img src="https://i.imgur.com/eBREKJs.png" alt="Extinction Eventt">
+                    <div class="card-info">
+                        <h4>Extinction Eventt</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="104" data-card-info="Panic Stations" data-card-image="https://i.imgur.com/jhFZGgB.png" data-faction="Obsidian Kingdom" data-type="Turning Point">
+                    <img src="https://i.imgur.com/jhFZGgB.png" alt="Panic Stations">
+                    <div class="card-info">
+                        <h4>Panic Stations</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="105" data-card-info="Gaia, Mother to All" data-card-image="https://i.imgur.com/irLU9Lm.png" data-faction="Oracles of Gaia" data-type="Fabled, Relic">
+                    <img src="https://i.imgur.com/irLU9Lm.png" alt="Gaia, Mother to All">
+                    <div class="card-info">
+                        <h4>Gaia, Mother to All</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="106" data-card-info="Buiqs, the Spiritfather" data-card-image="https://i.imgur.com/mGe6Yqk.png" data-faction="Oracles of Gaia" data-type="Fabled, Character">
+                    <img src="https://i.imgur.com/mGe6Yqk.png" alt="Buiqs, the Spiritfather">
+                    <div class="card-info">
+                        <h4>Buiqs, the Spiritfather</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="107" data-card-info="Druid of the Mane" data-card-image="https://i.imgur.com/RYWGvXB.png" data-faction="Oracles of Gaia" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/RYWGvXB.png" alt="Druid of the Mane">
+                    <div class="card-info">
+                        <h4>Druid of the Mane</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="108" data-card-info="Druid of the Paw" data-card-image="https://i.imgur.com/dta08Jf.png" data-faction="Oracles of Gaia" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/dta08Jf.png" alt="Druid of the Paw">
+                    <div class="card-info">
+                        <h4>Druid of the Paw</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="109" data-card-info="Druid of the Shell" data-card-image="https://i.imgur.com/tTe3xxO.png" data-faction="Oracles of Gaia" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/tTe3xxO.png" alt="Druid of the Shell">
+                    <div class="card-info">
+                        <h4>Druid of the Shell</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="110" data-card-info="Druid of the Talon" data-card-image="https://i.imgur.com/puCUNQW.png" data-faction="Oracles of Gaia" data-type="Historic, Character">
+                    <img src="https://i.imgur.com/puCUNQW.png" alt="Druid of the Talon">
+                    <div class="card-info">
+                        <h4>Druid of the Talon</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="111" data-card-info="Dryad" data-card-image="https://i.imgur.com/hMiz8QQ.png" data-faction="Oracles of Gaia" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/hMiz8QQ.png" alt="Dryad">
+                    <div class="card-info">
+                        <h4>Dryad</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="112" data-card-info="Stony Observer" data-card-image="https://i.imgur.com/iOXUxLV.png" data-faction="Oracles of Gaia" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/iOXUxLV.png" alt="Stony Observer">
+                    <div class="card-info">
+                        <h4>Stony Observer</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="113" data-card-info="Vinebeast" data-card-image="https://i.imgur.com/tS1EEz3.png" data-faction="Oracles of Gaia" data-type="Unsung, Character">
+                    <img src="https://i.imgur.com/tS1EEz3.png" alt="Vinebeast">
+                    <div class="card-info">
+                        <h4>Vinebeast</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="114" data-card-info="Ember Spirit" data-card-image="https://i.imgur.com/ae02jF6.png" data-faction="Oracles of Gaia" data-type="Unsung, Character, Turning Point">
+                    <img src="https://i.imgur.com/ae02jF6.png" alt="Ember Spirit">
+                    <div class="card-info">
+                        <h4>Ember Spirit</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="115" data-card-info="Flytrap Spirit" data-card-image="https://i.imgur.com/CT8ME39.png" data-faction="Oracles of Gaia" data-type="Unsung, Character, Turning Point">
+                    <img src="https://i.imgur.com/CT8ME39.png" alt="Flytrap Spirit">
+                    <div class="card-info">
+                        <h4>Flytrap Spirit</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="116" data-card-info="Frost Spirit" data-card-image="https://i.imgur.com/GLFwmI0.png" data-faction="Oracles of Gaia" data-type="Unsung, Character, Turning Point">
+                    <img src="https://i.imgur.com/GLFwmI0.png" alt="Frost Spirit">
+                    <div class="card-info">
+                        <h4>Frost Spirit</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="117" data-card-info="Wind Spirit" data-card-image="https://i.imgur.com/3Z8WvFZ.png" data-faction="Oracles of Gaia" data-type="Unsung, Character, Turning Point">
+                    <img src="https://i.imgur.com/3Z8WvFZ.png" alt="Wind Spirit">
+                    <div class="card-info">
+                        <h4>Wind Spirit</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="118" data-card-info="Glyph Tree" data-card-image="https://i.imgur.com/Ej7LVD6.png" data-faction="Oracles of Gaia" data-type="Relic">
+                    <img src="https://i.imgur.com/Ej7LVD6.png" alt="Glyph Tree">
+                    <div class="card-info">
+                        <h4>Glyph Tree</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="119" data-card-info="Replenish" data-card-image="https://i.imgur.com/pe86nrk.png" data-faction="Oracles of Gaia" data-type="Turning Point">
+                    <img src="https://i.imgur.com/pe86nrk.png" alt="Replenish">
+                    <div class="card-info">
+                        <h4>Replenish</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="120" data-card-info="Metamorphosis" data-card-image="https://i.imgur.com/k1VCKRf.png" data-faction="Oracles of Gaia" data-type="Turning Point">
+                    <img src="https://i.imgur.com/k1VCKRf.png" alt="Metamorphosis">
+                    <div class="card-info">
+                        <h4>Metamorphosis</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-card-id="121" data-card-info="Earthquake" data-card-image="https://i.imgur.com/mRfgMBs.png" data-faction="Oracles of Gaia" data-type="Turning Point">
+                    <img src="https://i.imgur.com/mRfgMBs.png" alt="Earthquake">
+                    <div class="card-info">
+                        <h4>Earthquake</h4>
+                        <div class="card-counter">
+                            <button class="decrement">-</button>
+                            <span class="count">0</span>
+                            <button class="increment">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Popup Modal -->
+            <div id="popup-modal" class="popup-modal">
+                <div class="popup-content">
+                    <span class="close-button">&times;</span>
+                    <div class="popup-body">
+                        <div class="popup-image">
+                            <img id="popup-image" src="" alt="Card Image">
+                        </div>
+                        <div class="popup-info">
+                            <h2>Card Information</h2>
+                            <div class="info-block">
+                                <label for="popup-name">Name: </label>
+                                <p id="popup-name"></p>
+                            </div>
+                            <div class="info-block">
+                                <label for="popup-faction">Faction: </label>
+                                <p id="popup-faction"></p>
+                            </div>
+                            <div class="info-block">
+                                <label for="popup-type">Type: </label>
+                                <p id="popup-type"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Deck -->
+            <div class="deck-container">
+                <div class="deck">
+                    <!-- Cards added to the deck will be displayed here -->
+                </div>
+            </div>
+            
+        </section>
+    </div>
+    <script>
+        function toggleAccordion(id) {
+            var accordion = document.getElementById(id + "-dropdown");
+            accordion.style.display = (accordion.style.display === "block") ? "none" : "block";
+        }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const validTypes = ["Relic", "Character", "Renowned", "Fabled", "Unsung", "Historic", "Turning Point", "Pirate", "Prophet", "Spirit"];
+            const validFactions = ["Mattervoid", "Yucatec Scale-Clan", "Animae Mechanicus", "Atlantis", "Obsidian Kingdom", "Oracles of Gaia"];
+            let deck = [];
+            const cardCount = {
+                total: 0,
+                fabled: 0,
+                renowned: 0,
+                others: {}
+            };
+    
+            const MAX_DECK_SIZE = 35;
+            const MAX_FABLED_CARDS = 2;
+            const MAX_RENOWNED_CARDS = 4;
+            const MAX_CARD_COPIES = 3;
+    
+            function isDeckValid(card) {
+                // Check if the deck exceeds the total card limit
+                if (cardCount.total >= MAX_DECK_SIZE) {
+                    alert('Deck cannot have more than 35 cards.');
+                    return false;
+                }
+    
+                // Split the card types by comma and check if any of them is valid
+                const cardTypes = card.type.split(',').map(type => type.trim());
+                const isValidType = cardTypes.some(type => validTypes.includes(type));
+                if (!isValidType) {
+                    alert('Invalid card type.');
+                    return false;
+                }
+    
+                // Check if card faction is valid
+                if (!validFactions.includes(card.faction)) {
+                    alert('Invalid card faction.');
+                    return false;
+                }
+    
+                // Check specific rules for Fabled cards
+                if (cardTypes.includes("Fabled") && cardCount.fabled >= MAX_FABLED_CARDS) {
+                    alert('Deck cannot have more than 2 unique Fabled cards.');
+                    return false;
+                }
+    
+                // Check specific rules for Renowned cards
+                if (cardTypes.includes("Renowned") && cardCount.renowned >= MAX_RENOWNED_CARDS) {
+                    alert('Deck cannot have more than 4 unique Renowned cards.');
+                    return false;
+                }
+    
+                // Check if the deck already contains the maximum allowed copies of the card
+                const existingCard = deck.find(c => c.cardInfo === card.name);
+                if (existingCard && existingCard.count >= MAX_CARD_COPIES) {
+                    alert(`Deck cannot have more than ${MAX_CARD_COPIES} copies of each card.`);
+                    return false;
+                }
+    
+                return true;
+            }
+    
+            function addCardToDeck(cardId, count, cardElement) {
+                // Ensure deck is an array and initialize if necessary
+                deck = Array.isArray(deck) ? deck : [];
+                // Find existing card in the deck
+                const existingCard = deck.find(item => item.cardId === cardId);
+                if (count > 0) {
+                    // If the card already exists in the deck, update its count
+                    if (existingCard) {
+                        existingCard.count = count;
+                    } else {
+                        // If the card is not in the deck, add it
+                        const cardInfo = cardElement.dataset.cardInfo;
+                        const cardImage = cardElement.dataset.cardImage;
+                        const cardType = cardElement.dataset.type;
+                        const cardFaction = cardElement.dataset.faction;
+    
+                        const newCard = {
+                            cardId,
+                            cardInfo,
+                            cardImage,
+                            count,
+                            type: cardType,
+                            faction: cardFaction
+                        };
+    
+                        // Check if the card is valid for the deck
+                        if (isDeckValid(newCard)) {
+                            deck.push(newCard);
+                            cardCount.total++;
+    
+                            // Update card counts based on type
+                            const cardTypes = cardType.split(',').map(type => type.trim());
+                            if (cardTypes.includes("Fabled")) {
+                                cardCount.fabled++;
+                            } else if (cardTypes.includes("Renowned")) {
+                                cardCount.renowned++;
+                            } else {
+                                cardCount.others[cardInfo] = (cardCount.others[cardInfo] || 0) + 1;
+                            }
+                        }
+                    }
+                } else {
+                    // If the card count is 0, remove the card from the deck
+                    const cardIndex = deck.findIndex(item => item.cardId === cardId);
+                    if (cardIndex > -1) {
+                        deck.splice(cardIndex, 1);
+                    }
+                }
+    
+                // Render the deck after updating it
+                renderDeck();
+            }
+    
+            function removeCardFromDeck(card) {
+                const existingCard = deck.find(c => 
+                    c.cardInfo === card.name && 
+                    c.type === card.type && 
+                    c.faction === card.faction
+                );
+    
+                if (existingCard) {
+                    existingCard.count--;
+                    cardCount.total--;
+    
+                    const cardTypes = card.type.split(',').map(type => type.trim());
+                    if (cardTypes.includes("Fabled")) {
+                        cardCount.fabled--;
+                    } else if (cardTypes.includes("Renowned")) {
+                        cardCount.renowned--;
+                    } else {
+                        cardCount.others[card.name]--;
+                        if (cardCount.others[card.name] === 0) {
+                            delete cardCount.others[card.name];
+                        }
+                    }
+    
+                    if (existingCard.count === 0) {
+                        const index = deck.findIndex(c => 
+                            c.cardInfo === card.name && 
+                            c.type === card.type && 
+                            c.faction === card.faction
+                        );
+                        if (index !== -1) {
+                            deck.splice(index, 1);
+                        }
+                    }
+                }
+    
+                renderDeck();
+            }
+    
+            // Function to remove card from deck
+            const cards = document.querySelectorAll('.card');
+            const modal = document.getElementById('popup-modal');
+            const closeButton = document.querySelector('.close-button');
+            const popupImage = document.getElementById('popup-image');
+            const popupName = document.getElementById('popup-name');
+            const popupFaction = document.getElementById('popup-faction');
+            const popupType = document.getElementById('popup-type');
+            const deckContainer = document.querySelector('.deck');
+    
+            cards.forEach(card => {
+                card.addEventListener('click', function(event) {
+                    if (event.target.classList.contains('increment') || event.target.classList.contains('decrement')) {
+                        return;
+                    }
+    
+                    const cardInfo = card.getAttribute('data-card-info');
+                    const cardImage = card.getAttribute('data-card-image');
+                    const cardFaction = card.getAttribute('data-faction');
+                    const cardType = card.getAttribute('data-type');
+    
+                    if (cardImage && cardInfo && cardFaction && cardType) {
+                        popupImage.src = cardImage;
+                        popupName.textContent = cardInfo;
+                        popupFaction.textContent = cardFaction;
+                        popupType.textContent = cardType;
+                        modal.style.display = 'block';
+                    } else {
+                        console.error('Data attributes are missing or incorrect.');
+                    }
+                });
+    
+                const decrementButton = card.querySelector('.decrement');
+                const incrementButton = card.querySelector('.increment');
+                const countSpan = card.querySelector('.count');
+                const cardId = card.dataset.cardId;
+    
+                decrementButton.addEventListener('click', function(event) {
+                    event.stopPropagation();
+    
+                    let count = parseInt(countSpan.textContent);
+                    if (count > 0) {
+                        count--;
+    
+                        const cardData = {
+                            name: card.getAttribute('data-card-info'),
+                            type: card.getAttribute('data-type'),
+                            faction: card.getAttribute('data-faction')
+                        };
+    
+                        countSpan.textContent = count;
+                        removeCardFromDeck(cardData);
+                    }
+                });
+    
+                incrementButton.addEventListener('click', function(event) {
+                    event.stopPropagation();
+    
+                    const cardData = {
+                        name: card.getAttribute('data-card-info'),
+                        type: card.getAttribute('data-type'),
+                        faction: card.getAttribute('data-faction')
+                    };
+    
+                    let count = parseInt(countSpan.textContent);
+                    count++;
+    
+                    if (isDeckValid(cardData)) {
+                        countSpan.textContent = count;
+                        addCardToDeck(cardId, count, card);
+                    }
+                });
+            });
+    
+            function renderDeck() {
+                deckContainer.innerHTML = '';
+    
+                deck.forEach(item => {
+                    const deckCard = document.createElement('div');
+                    deckCard.classList.add('deck-card');
+                    deckCard.innerHTML = `
+                        <img src="${item.cardImage}" alt="${item.cardInfo}">
+                        <div class="deck-card-info">
+                            <h4>${item.cardInfo}</h4>
+                            <span>Count: ${item.count}</span>
+                        </div>
+                    `;
+                    deckContainer.appendChild(deckCard);
+                    deckContainer.style.display = none;
+                });
+            }
+    
+            closeButton.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+    
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const validTypes = ["Relic", "Character", "Renowned", "Fabled", "Unsung", "Historic", "Turning Point", "Pirate", "Prophet", "Spirit"];
+            const validFactions = ["Mattervoid", "Yucatec Scale-Clan", "Animae Mechanicus", "Atlantis", "Obsidian Kingdom", "Oracles of Gaia"];
+            const cards = document.querySelectorAll('.card');
+            const filtersCount = document.querySelector('.additional-buttons .span3');
+            let selectedFilters = {
+                faction: null,
+                type: null,
+                name: ''
+            };
+    
+            const factionOptions = document.querySelectorAll('#faction-dropdown .option');
+            const typeOptions = document.querySelectorAll('#type-dropdown .option');
+            const searchBox = document.querySelector('.search-box input');
+    
+            factionOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    // Remove the selected class from all faction options
+                    factionOptions.forEach(opt => opt.classList.remove('selected'));
+                    
+                    // Add the selected class to the clicked option
+                    option.classList.add('selected');
+                    
+                    // Update the selected faction filter
+                    selectedFilters.faction = option.getAttribute('data-faction');
+                    filterCards(selectedFilters);
+                });
+            });
+    
+            typeOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    // Remove the selected class from all type options
+                    typeOptions.forEach(opt => opt.classList.remove('selected'));
+                    
+                    // Add the selected class to the clicked option
+                    option.classList.add('selected');
+                    
+                    // Update the selected type filter
+                    selectedFilters.type = option.getAttribute('data-type');
+                    filterCards(selectedFilters);
+                });
+            });
+    
+            searchBox.addEventListener('input', () => {
+                // Update the selected name filter
+                selectedFilters.name = searchBox.value.trim().toLowerCase();
+                filterCards(selectedFilters);
+            });
+    
+            function filterCards(filters) {
+                cards.forEach(card => {
+                    const cardFaction = card.getAttribute('data-faction');
+                    const cardTypes = card.getAttribute('data-type').split(',').map(type => type.trim());
+                    const cardName = card.getAttribute('data-card-info').toLowerCase();
+    
+                    let isMatch = true;
+    
+                    if (filters.faction && filters.faction !== cardFaction) {
+                        isMatch = false;
+                    }
+    
+                    if (filters.type && !cardTypes.includes(filters.type)) {
+                        isMatch = false;
+                    }
+    
+                    if (filters.name && !cardName.includes(filters.name)) {
+                        isMatch = false;
+                    }
+    
+                    card.style.display = isMatch ? 'block' : 'none';
+                });
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const clearButton = document.querySelector('.button4');
+            const searchInput = document.querySelector('.search-box input');
+            const filterOptions = document.querySelectorAll('.option');
+            const cards = document.querySelectorAll('.card');
+            
+            clearButton.addEventListener('click', function() {
+                // Clear search input
+                searchInput.value = '';
+    
+                // Clear selected filters
+                filterOptions.forEach(option => {
+                    option.classList.remove('selected');
+                });
+                cards.forEach(card => {
+                    console.log('e');
+                    card.style.display = 'block';
+                });
+    
+                // Update filters count
+                updateFilterCount();
+            });
+        });
+    
+        function updateFilterCount() {
+            // Reset filters count to 0
+            const filtersCount = document.querySelector('.additional-buttons .span3');
+            filtersCount.textContent = 'Filters (0)';
+        }
+    </script>
+    
+    
+    
+</body>
+</html>
